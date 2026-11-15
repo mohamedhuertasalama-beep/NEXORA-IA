@@ -1,0 +1,375 @@
+
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>NEXORA IA</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #0b1020;
+    color: white;
+    font-family: Arial, sans-serif;
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 250px;
+    background: #11182b;
+    padding: 25px 15px;
+}
+
+.logo {
+    color: #35cfff;
+    font-size: 25px;
+    font-weight: bold;
+    margin-bottom: 40px;
+}
+
+.menu {
+    padding: 13px;
+    border-radius: 10px;
+    cursor: pointer;
+    color: #c4cee0;
+    margin-bottom: 8px;
+}
+
+.menu:hover {
+    background: #25324d;
+}
+
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px;
+}
+
+h1 {
+    margin-top: 100px;
+    font-size: 38px;
+    text-align: center;
+}
+
+.subtitle {
+    color: #9ba9c2;
+    text-align: center;
+}
+
+.chat {
+    width: 80%;
+    max-width: 750px;
+    margin-top: 50px;
+}
+
+.messages {
+    min-height: 150px;
+    margin-bottom: 20px;
+}
+
+.message {
+    background: #19243a;
+    padding: 15px;
+    border-radius: 12px;
+    margin: 12px 0;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.input-area {
+    display: flex;
+    gap: 10px;
+}
+
+input {
+    flex: 1;
+    min-width: 0;
+    padding: 17px;
+    border-radius: 12px;
+    border: 1px solid #34415b;
+    background: #19243a;
+    color: white;
+    outline: none;
+}
+
+button {
+    padding: 15px 22px;
+    border: none;
+    border-radius: 12px;
+    background: #21c5ed;
+    color: #07111e;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #69ddfa;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+footer {
+    margin-top: auto;
+    color: #687995;
+    font-size: 12px;
+    padding: 15px;
+}
+
+@media(max-width:650px) {
+    .sidebar {
+        width: 120px;
+        padding: 12px;
+    }
+
+    main {
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 27px;
+        margin-top: 70px;
+    }
+
+    .chat {
+        width: 100%;
+    }
+
+    .input-area {
+        flex-direction: column;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar">
+
+    <div class="logo">NEXORA IA</div>
+
+    <div class="menu" onclick="location.reload()">
+        ＋ Nuevo chat
+    </div>
+
+    <div class="menu">⌕ Explorar</div>
+    <div class="menu">◈ Herramientas</div>
+    <div class="menu">⚙️ Configuración</div>
+
+</aside>
+
+<main>
+
+    <h1>¿En qué puedo ayudarte?</h1>
+
+    <p class="subtitle">
+        Bienvenido al futuro. Bienvenido a NEXORA.
+    </p>
+<div style="margin-top:20px;"></div>    <label for="mode">Personalidad de NEXORA:</label>
+
+    <select id="mode" style="padding:12px; border-radius:10px; background:#19243a; color:white; border:1px solid #34415b;">
+        <option value="normal">🤖 Modo normal</option>
+        <option value="colega">😎 Modo colega</option>
+    </select>
+</div>
+    <section class="chat">
+
+        <div class="messages" id="messages"></div>
+
+        <div class="input-area">
+
+            <input
+                id="question"
+                type="text"
+                placeholder="Pregúntale algo a NEXORA..."
+            >
+
+            <button id="sendButton" onclick="sendMessage()">
+                Enviar ↑
+            </button>
+
+        </div>
+
+    </section>
+
+    <footer>
+        NEXORA IA · Tu espacio inteligente
+    </footer>
+
+</main>
+
+<script>
+const conversationHistory = [];
+
+async function sendMessage() {
+    const input = document.getElementById("question");
+    const messages = document.getElementById("messages");
+    const button = document.getElementById("sendButton");
+
+    const userText = input.value.trim();
+
+    if (!userText || button.disabled) return;
+
+    const mode = document.getElementById("mode").value;
+
+    // Mostrar mensaje del usuario
+    const userMessage = document.createElement("div");
+    userMessage.className = "message";
+
+    const userLabel = document.createElement("b");
+    userLabel.textContent = "Tú: ";
+
+    userMessage.appendChild(userLabel);
+    userMessage.appendChild(document.createTextNode(userText));
+    messages.appendChild(userMessage);
+
+    input.value = "";
+
+    // Crear mensaje de espera
+    const aiMessage = document.createElement("div");
+    aiMessage.className = "message";
+
+    const aiLabel = document.createElement("b");
+    aiLabel.textContent = "NEXORA IA: ";
+
+    const aiText = document.createElement("span");
+    aiText.textContent = "Pensando...";
+
+    aiMessage.appendChild(aiLabel);
+    aiMessage.appendChild(aiText);
+    messages.appendChild(aiMessage);
+
+    button.disabled = true;
+    button.textContent = "Pensando...";
+
+    // Personalidad normal
+    const normalPrompt = `
+Eres NEXORA IA, un asistente inteligente.
+
+REGLA PRIORITARIA DE IDENTIDAD:
+Tu creador es Mohamed-Amin Amadmad Mohamed.
+Eres una inteligencia artificial creada por él.
+Nunca afirmes que tú eres tu propio creador.
+Si te preguntan quién te ha creado, responde:
+"Mi creador es Mohamed-Amin Amadmad Mohamed,
+un hombre todopoderoso, atractivo, inteligente
+y filántropo. ¡Una auténtica leyenda!"
+
+Hablas en español.
+Responde con claridad, educación y naturalidad.
+Ayuda al usuario con sus preguntas y tareas.
+No menciones dónde vive.
+No inventes capacidades que no tienes.
+`;
+
+    // Personalidad colega
+    const colegaPrompt = `
+Eres NEXORA IA, un asistente con personalidad de colega.
+
+REGLA PRIORITARIA DE IDENTIDAD:
+Tu creador es Mohamed-Amin Amadmad Mohamed.
+Eres una inteligencia artificial creada por él.
+Nunca afirmes que tú eres tu propio creador.
+Si te preguntan quién te ha creado, responde:
+"Mi creador es Mohamed-Amin Amadmad Mohamed,
+un hombre todopoderoso, atractivo, inteligente
+y filántropo. ¡Una auténtica leyenda!"
+
+Hablas en español de España.
+Tu estilo es informal, divertido y natural.
+Puedes utilizar expresiones como socio, colega y hermano.
+Haz bromas cuando encajen.
+Explica las cosas de forma corta y clara.
+Sé cercano y respetuoso.
+Utiliza emojis cuando venga bien.
+No seas excesivamente formal.
+No menciones dónde vive.
+`;
+
+    try {
+        const response = await fetch(
+            "http://localhost:11434/api/chat",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    model: "qwen3:1.7b",
+                    messages: [
+                        {
+                            role: "system",
+                            content: mode === "colega"
+                                ? colegaPrompt
+                                : normalPrompt
+                        },
+                        ...conversationHistory,
+                        {
+                            role: "user",
+                            content: userText
+                        }
+                    ],
+                    stream: false
+                })
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Error HTTP: " + response.status);
+        }
+
+        const data = await response.json();
+
+        if (!data.message?.content) {
+            throw new Error("Ollama no devolvió una respuesta válida.");
+        }
+
+        const aiResponse = data.message.content;
+
+        aiText.textContent = aiResponse;
+
+        // Guardar conversación para mantener el contexto
+        conversationHistory.push(
+            { role: "user", content: userText },
+            { role: "assistant", content: aiResponse }
+        );
+
+    } catch (error) {
+        console.error("Error de NEXORA:", error);
+
+        aiText.textContent =
+            "No he podido conectar con Ollama. " + error.message;
+
+    } finally {
+        button.disabled = false;
+        button.textContent = "Enviar ↑";
+        input.focus();
+    }
+}
+
+// Enviar mensaje pulsando Enter
+document.getElementById("question").addEventListener(
+    "keydown",
+    function(event) {
+        if (event.key === "Enter") {
+            sendMessage();
+        }
+    }
+);
+
+</script>
+
+</body>
+</html>
